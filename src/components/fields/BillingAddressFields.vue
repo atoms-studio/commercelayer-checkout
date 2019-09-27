@@ -49,6 +49,7 @@
         item-value="code"
         v-model="country_code"
         :error-messages="errorMessages('country_code')"
+        autocomplete="disabled"
         @input="handleInput()"
         @blur="handleBlur('country_code')"
         @change="updateShipToDifferentAddressRequired"
