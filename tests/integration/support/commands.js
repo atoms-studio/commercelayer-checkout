@@ -1,6 +1,14 @@
 import { apiRequestHeaders, euAddress } from './utils'
 import _ from 'lodash'
 
+Cypress.Commands.add('iframe', { prevSubject: 'element' }, $iframe => {
+  return new Cypress.Promise(resolve => {
+    $iframe.ready(function () {
+      resolve($iframe.contents().find('body'))
+    })
+  })
+})
+
 Cypress.Commands.add('get_access_token', () => {
   cy.request({
     url: Cypress.env('API_BASE_URL') + '/oauth/token',
@@ -15,6 +23,24 @@ Cypress.Commands.add('get_access_token', () => {
       'Content-Type': 'application/json'
     }
   }).its('body.access_token')
+})
+
+Cypress.Commands.add('get_customer_access_token', credentials => {
+  cy.request({
+    url: Cypress.env('API_BASE_URL') + '/oauth/token',
+    method: 'POST',
+    body: {
+      grant_type: 'password',
+      client_id: Cypress.env('API_CLIENT_ID'),
+      client_secret: Cypress.env('API_CLIENT_SECRET'),
+      username: credentials.username,
+      password: credentials.password
+    },
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }).its('body')
 })
 
 Cypress.Commands.add('create_order', options => {
@@ -191,8 +217,10 @@ Cypress.Commands.add('set_default_shipping_methods', options => {
       method: 'GET',
       headers: apiRequestHeaders(accessToken)
     }).then(response => {
-      let shipments = JSON.parse(response.body)
-      _.each(shipments.data, shipment => {
+      console.log(response)
+
+      let shipments = response.body.data
+      _.each(shipments, shipment => {
         let shippingMethod = _.first(
           shipment.relationships.available_shipping_methods.data
         )
@@ -218,7 +246,7 @@ Cypress.Commands.add('get_available_payment_methods', options => {
       order_id: options.order_id,
       include: 'available_payment_methods'
     }).then(order => {
-      return _.filter(JSON.parse(order).included, { type: 'payment_methods' })
+      return _.filter(order.included, { type: 'payment_methods' })
     })
   })
 })
@@ -235,7 +263,7 @@ Cypress.Commands.add('get_billing_info_validation_rules', options => {
 
 Cypress.Commands.add('delete_billing_info_validation_rules', options => {
   cy.get_billing_info_validation_rules().then(response => {
-    _.each(JSON.parse(response).data, resource => {
+    _.each(response.data, resource => {
       cy.get_access_token().then(accessToken => {
         cy.request({
           url:
@@ -269,6 +297,29 @@ Cypress.Commands.add('create_billing_info_validation_rule', options => {
         }
       },
       headers: apiRequestHeaders(accessToken)
+    }).its('body.data')
+  })
+})
+
+Cypress.Commands.add('create_customer_address', options => {
+  cy.create_address({ attributes: options.addressAttrbutes }).then(address => {
+    cy.request({
+      url: Cypress.env('API_BASE_URL') + '/api/customer_addresses',
+      method: 'POST',
+      body: {
+        data: {
+          type: 'customer_addresses',
+          relationships: {
+            address: {
+              data: {
+                type: 'addresses',
+                id: address.id
+              }
+            }
+          }
+        }
+      },
+      headers: apiRequestHeaders(options.accessToken)
     }).its('body.data')
   })
 })
@@ -375,40 +426,34 @@ Cypress.Commands.add('check_stripe_challenge_frame', () => {
 })
 
 Cypress.Commands.add('check_braintree_card_hosted_fields', () => {
-  cy.get('iframe[name=braintree-hosted-field-number]').should(
+  cy.get('iframe#braintree-hosted-field-number').should(
     $iframe =>
       expect($iframe.contents().find('input[name=credit-card-number]')).to.exist
   )
-  cy.get('iframe[name=braintree-hosted-field-expirationDate]').should(
+  cy.get('iframe#braintree-hosted-field-expirationDate').should(
     $iframe =>
       expect($iframe.contents().find('input[name=expiration]')).to.exist
   )
-  cy.get('iframe[name=braintree-hosted-field-cvv]').should(
+  cy.get('iframe#braintree-hosted-field-cvv').should(
     $iframe => expect($iframe.contents().find('input[name=cvv]')).to.exist
   )
 })
 
 Cypress.Commands.add('enter_braintree_card', options => {
-  cy.get('iframe[name=braintree-hosted-field-number]').then($iframe => {
-    const $body = $iframe.contents().find('body')
-    cy.wrap($body)
-      .find('input[name=credit-card-number]')
-      .type(options.card_number)
-  })
+  cy.get('iframe#braintree-hosted-field-number')
+    .iframe()
+    .find('input[name=credit-card-number]')
+    .type(options.card_number)
 
-  cy.get('iframe[name=braintree-hosted-field-expirationDate]').then($iframe => {
-    const $body = $iframe.contents().find('body')
-    cy.wrap($body)
-      .find('input[name=expiration]')
-      .type(options.exp_date)
-  })
+  cy.get('iframe#braintree-hosted-field-expirationDate')
+    .iframe()
+    .find('input[name=expiration]')
+    .type(options.exp_date)
 
-  cy.get('iframe[name=braintree-hosted-field-cvv]').then($iframe => {
-    const $body = $iframe.contents().find('body')
-    cy.wrap($body)
-      .find('input[name=cvv]')
-      .type(options.cvc)
-  })
+  cy.get('iframe#braintree-hosted-field-cvv')
+    .iframe()
+    .find('input[name=cvv]')
+    .type(options.cvc)
 })
 
 Cypress.Commands.add('check_braintree_challenge_frame', () => {
@@ -416,26 +461,29 @@ Cypress.Commands.add('check_braintree_challenge_frame', () => {
 })
 
 Cypress.Commands.add('authorize_braintree_challenge_frame', () => {
-  cy.get('iframe#Cardinal-CCA-IFrame').then($iframe => {
-    const $body = $iframe.contents().find('body')
-    cy.wrap($body)
-      .find('input[name=challengeDataEntry]')
-      .type('1234')
+  cy.get('iframe#Cardinal-CCA-IFrame')
+    .iframe()
+    // .find('iframe#authWindow')
+    // .iframe()
+    .find('input[name=challengeDataEntry]')
+    .type('1234')
 
-    cy.wrap($body)
-      .find('input[value=SUBMIT]')
-      .click()
-  })
+  cy.get('iframe#Cardinal-CCA-IFrame')
+    .iframe()
+    // .find('iframe#authWindow')
+    // .iframe()
+    .find('input[value=SUBMIT]')
+    .click()
+
+  cy.wait(5000) // better way?
 })
 
-Cypress.Commands.add('cancel_braintree_challenge_frame', () => {
-  cy.get('iframe#Cardinal-CCA-IFrame').then($iframe => {
-    const $body = $iframe.contents().find('body')
-
-    cy.wrap($body)
-      .find('input[value=CANCEL]')
-      .click()
-  })
+Cypress.Commands.add('check_braintree_challenge_frame_cancel', () => {
+  cy.get('iframe#Cardinal-CCA-IFrame')
+    .iframe()
+    .find('iframe#authWindow')
+    .iframe()
+    .contains('Exit')
 })
 
 Cypress.Commands.add('check_adyen_card_component', () => {
@@ -447,45 +495,56 @@ Cypress.Commands.add('check_adyen_card_component', () => {
 Cypress.Commands.add('enter_adyen_card', options => {
   cy.get('iframe.js-iframe')
     .eq(0)
-    .then($iframe => {
-      const $body = $iframe.contents().find('body')
-      cy.wrap($body)
-        .find('#encryptedCardNumber')
-        .type(options.card_number)
-    })
+    .iframe()
+    .find('#encryptedCardNumber')
+    .type(options.card_number)
+
   cy.get('iframe.js-iframe')
     .eq(1)
-    .then($iframe => {
-      const $body = $iframe.contents().find('body')
-      cy.wrap($body)
-        .find('#encryptedExpiryDate')
-        .type(options.exp_date)
-    })
+    .iframe()
+    .find('#encryptedExpiryDate')
+    .type(options.exp_date)
+
   cy.get('iframe.js-iframe')
     .eq(2)
-    .then($iframe => {
-      const $body = $iframe.contents().find('body')
-      cy.wrap($body)
-        .find('#encryptedSecurityCode')
-        .type(options.cvc)
-    })
+    .iframe()
+    .find('#encryptedSecurityCode')
+    .type(options.cvc)
 })
 
 Cypress.Commands.add('check_adyen_challenge_frame', () => {
-  cy.get('iframe[name=threeDSIframe]').should(
-    $iframe => expect($iframe.contents().find('input[name=answer]')).to.exist
-  )
+  cy.get('iframe.adyen-checkout__iframe')
 })
 
 Cypress.Commands.add('authorize_adyen_challenge_frame', () => {
-  cy.get('iframe[name=threeDSIframe]').then($iframe => {
-    const $body = $iframe.contents().find('body')
-    cy.wrap($body)
-      .find('input[name=answer]')
-      .type('password')
+  cy.get('iframe.adyen-checkout__iframe')
+    .iframe()
+    .find('input[name=answer]')
+    .type('password')
 
-    cy.wrap($body)
-      .find('input[value=Submit]')
-      .click()
+  cy.get('iframe.adyen-checkout__iframe')
+    .iframe()
+    .find('input[value=Submit]')
+    .click()
+
+  cy.wait(5000) // better way?
+})
+
+Cypress.Commands.add('place_order', () => {
+  cy.get('#payment-step-submit').click()
+  cy.wait(5000) // better way?
+})
+
+Cypress.Commands.add('check_order_confirmation_page', orderId => {
+  cy.location().should(loc => {
+    expect(loc.pathname).to.eq(`/${orderId}/confirmation`)
   })
+})
+
+Cypress.Commands.add('check_out_of_stock_message', () => {
+  cy.contains('Some items have gone out of stock')
+})
+
+Cypress.Commands.add('check_card_declined_message', () => {
+  cy.contains('Your card was declined')
 })

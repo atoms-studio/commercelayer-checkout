@@ -6,21 +6,7 @@
           <v-icon :small="true">place</v-icon>
         </v-flex>
         <v-flex>
-          <div class="px-2">
-            {{ address.first_name }} {{ address.last_name }}
-            <br />
-            {{ address.line_1 }}
-            <br />
-            {{ address.zip_code }} {{ address.city }} ({{ address.state_code }})
-            <br />
-            {{ countryName }}
-            <br />
-            {{ address.phone }}
-            <span v-if="billing">
-              <br />
-              {{ address.billing_info }}
-            </span>
-          </div>
+          <Address :address="address" :billing="billing" />
         </v-flex>
       </v-layout>
     </v-flex>
@@ -28,10 +14,12 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import countries from '@/data/countries'
+import Address from '@/components/partials/Address'
 
 export default {
+  components: {
+    Address
+  },
   props: {
     address: {
       type: Object,
@@ -42,17 +30,12 @@ export default {
       required: false,
       default: true
     }
-  },
-  computed: {
-    countryName () {
-      let country = _.find(countries, {
-        code: _.upperCase(this.address.country_code)
-      })
-      return country.name
-    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.v-icon {
+  margin-right: 8px;
+}
 </style>

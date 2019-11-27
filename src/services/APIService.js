@@ -9,7 +9,8 @@ import {
   shipmentIncludes,
   shipmentAttributes,
   paymentSourceAttributesMap,
-  orderDefaults
+  orderDefaults,
+  customerAddressAttributes
 } from '@/utils/attributes'
 
 const normalizedOrder = (order, response) => {
@@ -37,12 +38,115 @@ apiClient.interceptors.request.use(
   }
 )
 
+apiClient.interceptors.response.use(
+  response => {
+    return response
+  },
+  error => {
+    if (
+      error.response.status === 401 &&
+      error.response.data.errors &&
+      error.response.data.errors[0].code === 'INVALID_TOKEN'
+    ) {
+      return AuthService.updateAccessToken().then(accessToken => {
+        error.config.headers['Authorization'] = `Bearer ${accessToken}`
+        return apiClient.request(error.config)
+      })
+    }
+    return Promise.reject(error)
+  }
+)
+
+const createCustomerSubscription = (customerEmail, customerSubscription) => {
+  return apiClient
+    .post('/customer_subscriptions', {
+      data: {
+        type: 'customer_subscriptions',
+        attributes: {
+          customer_email: customerEmail,
+          reference: process.env.VUE_APP_SUBSCRIPTION_REF
+        }
+      }
+    })
+    .then(response => {
+      return normalize(response.data).get(['id'])
+    })
+    .catch(error => {
+      return Promise.reject(error.response)
+    })
+}
+
+const updateCustomerSubscription = (customerEmail, customerSubscription) => {
+  return apiClient
+    .patch('/customer_subscriptions/' + customerSubscription.id, {
+      data: {
+        type: 'customer_subscriptions',
+        id: customerSubscription.id,
+        attributes: {
+          customer_email: customerEmail,
+          reference: process.env.VUE_APP_SUBSCRIPTION_REF
+        }
+      }
+    })
+    .then(response => {
+      return normalize(response.data).get(['id'])
+    })
+    .catch(error => {
+      return Promise.reject(error.response)
+    })
+}
+
+const deleteCustomerSubscription = customerSubscription => {
+  return apiClient
+    .delete('/customer_subscriptions/' + customerSubscription.id)
+    .then(_ => {
+      return Promise.resolve({})
+    })
+    .catch(error => {
+      return Promise.reject(error.response)
+    })
+}
+
+const handleCustomerSubscription = (customerEmail, customerSubscription) => {
+  if (customerSubscription.checked) {
+    if (customerSubscription.id) {
+      return updateCustomerSubscription(customerEmail, customerSubscription)
+    } else {
+      return createCustomerSubscription(customerEmail, customerSubscription)
+    }
+  } else if (customerSubscription.id) {
+    return deleteCustomerSubscription(customerSubscription)
+  } else {
+    return Promise.resolve({})
+  }
+}
+
 const getOrder = orderId => {
   return apiClient
     .get('/orders/' + orderId + '?include=' + orderIncludes.join(','))
     .then(response => {
       return normalizedOrder(response.data, response)
     })
+    .catch(error => {
+      return Promise.reject(error.response)
+    })
+}
+
+const getCustomerAddresses = () => {
+  return apiClient
+    .get('/customer_addresses?include=address')
+    .then(response => {
+      return normalize(response.data).get(customerAddressAttributes)
+    })
+    .catch(error => {
+      return Promise.reject(error.response)
+    })
+}
+
+const getCustomerPaymentSources = () => {
+  return apiClient
+    .get('/customer_payment_sources?include=payment_source')
+    .then(response => {})
     .catch(error => {
       return Promise.reject(error.response)
     })
@@ -75,15 +179,14 @@ const updateShipmentShippingMethod = (shipment, shippingMethod) => {
     })
 }
 
-const updateOrderCustomerEmail = order => {
+const updateOrder = (order, attributes) => {
+  console.log(attributes)
   return apiClient
     .patch('/orders/' + order.id + '?include=' + orderIncludes.join(','), {
       data: {
         type: 'orders',
         id: order.id,
-        attributes: {
-          customer_email: order.customer_email
-        }
+        attributes: attributes
       }
     })
     .then(response => {
@@ -94,31 +197,12 @@ const updateOrderCustomerEmail = order => {
     })
 }
 
-const updateOrderCouponCode = order => {
-  return apiClient
-    .patch('/orders/' + order.id + '?include=' + orderIncludes.join(','), {
-      data: {
-        type: 'orders',
-        id: order.id,
-        attributes: {
-          coupon_code: order.coupon_code
-        }
-      }
-    })
-    .then(response => {
-      return normalizedOrder(order, response)
-    })
-    .catch(error => {
-      return Promise.reject(error.response)
-    })
-}
-
-const createAddress = address => {
+const createAddress = attributes => {
   return apiClient
     .post(`/addresses`, {
       data: {
         type: 'addresses',
-        attributes: _.omit(address, ['id'])
+        attributes: _.omit(attributes, ['id'])
       }
     })
     .then(response => {
@@ -129,13 +213,13 @@ const createAddress = address => {
     })
 }
 
-const updateAddress = address => {
+const updateAddress = attributes => {
   return apiClient
-    .patch(`/addresses/${address.id}`, {
+    .patch(`/addresses/${attributes.id}`, {
       data: {
         type: 'addresses',
-        id: address.id,
-        attributes: _.omit(address, ['id'])
+        id: attributes.id,
+        attributes: _.omit(attributes, ['id'])
       }
     })
     .then(response => {
@@ -146,8 +230,62 @@ const updateAddress = address => {
     })
 }
 
-const updateOrCreateAddress = address => {
-  return address.id ? updateAddress(address) : createAddress(address)
+const saveBillingAddress = order => {
+  return order._save_billing_address_to_customer_address_book
+    ? updateOrder(order, {
+      _save_billing_address_to_customer_address_book:
+          order._save_billing_address_to_customer_address_book
+    })
+    : order
+}
+
+const saveShippingAddress = order => {
+  return order._save_shipping_address_to_customer_address_book
+    ? updateOrder(order, {
+      _save_shipping_address_to_customer_address_book:
+          order._save_shipping_address_to_customer_address_book
+    })
+    : order
+}
+
+const updateOrCreateBillingAddress = order => {
+  if (order._billing_address_clone_id) {
+    return updateOrder(order, {
+      _billing_address_clone_id: order._billing_address_clone_id
+    }).then(order => {
+      return order.billing_address
+    })
+  } else {
+    return order.billing_address.id
+      ? updateAddress(order.billing_address).then(address => {
+        saveBillingAddress(order)
+        return address
+      })
+      : createAddress(order.billing_address).then(address => {
+        saveBillingAddress(order)
+        return address
+      })
+  }
+}
+
+const updateOrCreateShippingAddress = order => {
+  if (order._shipping_address_clone_id) {
+    return updateOrder(order, {
+      _shipping_address_clone_id: order._shipping_address_clone_id
+    }).then(order => {
+      return order.shipping_address
+    })
+  } else {
+    return order.shipping_address.id
+      ? updateAddress(order.shipping_address).then(address => {
+        saveShippingAddress(order)
+        return address
+      })
+      : createAddress(order.shipping_address).then(address => {
+        saveShippingAddress(order)
+        return address
+      })
+  }
 }
 
 const updateBillingAddressFields = (order, billingAddress) => {
@@ -202,12 +340,12 @@ const updateShippingAddressFields = (order, shippingAddress) => {
 }
 
 const updateOrderAddresses = order => {
-  return updateOrCreateAddress(order.billing_address)
+  return updateOrCreateBillingAddress(order)
     .then(billingAddress => {
       return updateBillingAddressFields(order, billingAddress).then(
         updatedOrder => {
           if (order.ship_to_different_address) {
-            return updateOrCreateAddress(order.shipping_address).then(
+            return updateOrCreateShippingAddress(order).then(
               shippingAddress => {
                 return updateShippingAddressFields(order, shippingAddress).then(
                   updatedOrder => {
@@ -325,9 +463,11 @@ const placeOrder = order => {
 }
 
 export default {
+  handleCustomerSubscription,
   getOrder,
-  updateOrderCustomerEmail,
-  updateOrderCouponCode,
+  getCustomerAddresses,
+  getCustomerPaymentSources,
+  updateOrder,
   updateOrderAddresses,
   updateShipmentShippingMethod,
   updateOrderPaymentMethod,

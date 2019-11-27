@@ -12,9 +12,19 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    auth: {
+      has_customer: false,
+      access_token: null,
+      refresh_token: null
+    },
     current_step: 1,
     notifications: {
       coupon_applied: false
+    },
+    buttons: {
+      loading_customer: false,
+      loading_delivery: false,
+      loading_payment: false
     },
     validations: {
       invalid_customer: false,
@@ -23,17 +33,20 @@ export default new Vuex.Store({
       invalid_shipments: false,
       invalid_payment_method: false
     },
-    buttons: {
-      loading_customer: false,
-      loading_delivery: false,
-      loading_payment: false
-    },
     errors: {
       apply_coupon: null,
       place_order: null
     },
     selected_payment_option_component: null,
-    order: {}
+    order: {},
+    customer_subscription: {
+      id: null,
+      checked: false
+    },
+    customer: {
+      addresses: [],
+      payment_sources: []
+    }
   },
   getters: {
     getField
@@ -63,6 +76,27 @@ export default new Vuex.Store({
     updatePlaceOrderError (state, value) {
       state.errors.place_order = value
     },
+    updateAuthHasCustomer (state, value) {
+      state.auth.has_customer = value
+    },
+    updateAuthAccessToken (state, value) {
+      state.auth.access_token = value
+    },
+    clearAuthAccessToken (state) {
+      state.auth.access_token = null
+    },
+    updateAuthRefreshToken (state, value) {
+      state.auth.refresh_token = value
+    },
+    updateCustomerAddresses (state, value) {
+      state.customer.addresses = value
+    },
+    updateCustomerSubscriptionId (state, value) {
+      state.customer_subscription.id = value
+    },
+    disableCustomerSubscription (state) {
+      state.customer_subscription.disabled = true
+    },
     updateField
   },
   actions: {
@@ -74,9 +108,24 @@ export default new Vuex.Store({
         return order
       })
     },
+    setCustomer ({ commit }) {
+      APIService.getCustomerAddresses()
+        .then(customerAddresses => {
+          commit('updateCustomerAddresses', customerAddresses)
+          return customerAddresses
+        })
+        .catch(response => console.log(response))
+
+      APIService.getCustomerPaymentSources()
+        .then(customerPaymentSources => {})
+        .catch(response => console.log(response))
+    },
     setOrderCustomerEmail ({ commit, state }) {
       NProgress.start()
-      return APIService.updateOrderCustomerEmail(state.order)
+      console.log(state.order.customer_email)
+      return APIService.updateOrder(state.order, {
+        customer_email: state.order.customer_email
+      })
         .then(order => {
           commit('updateOrder', order)
           return order
@@ -85,9 +134,27 @@ export default new Vuex.Store({
           NProgress.done()
         })
     },
+    handleCustomerSubscription ({ commit, state }) {
+      NProgress.start()
+      return APIService.handleCustomerSubscription(
+        state.order.customer_email,
+        state.customer_subscription
+      )
+        .then(customerSubscription => {
+          commit('updateCustomerSubscriptionId', customerSubscription.id)
+        })
+        .catch(_ => {
+          commit('disableCustomerSubscription')
+        })
+        .finally(() => {
+          NProgress.done()
+        })
+    },
     setOrderCouponCode ({ commit, state }) {
       NProgress.start()
-      return APIService.updateOrderCouponCode(state.order)
+      return APIService.updateOrder(state.order, {
+        coupon_code: state.order.coupon_code
+      })
         .then(order => {
           commit('updateOrder', order)
           commit('updateApplyCouponError', null)

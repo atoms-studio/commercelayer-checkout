@@ -1,12 +1,8 @@
-describe('[01.1] customer / customer email', () => {
-  var orderId
-
+describe('[01.1.1] customer / customer email and subscription', () => {
   before(() => {
     cy.create_order({
       market_id: Cypress.env('EU_MARKET_ID')
     }).then(order => {
-      orderId = order.id
-
       cy.update_stock_item({
         stock_item_id: Cypress.env('EU_STOCK_ITEM_ID'),
         quantity: 1
@@ -22,11 +18,6 @@ describe('[01.1] customer / customer email', () => {
     })
   })
 
-  it('lets the customer add their email address', () => {
-    cy.get('#customer-email').type('filippo@example.com')
-    cy.get('#customer-step-submit').should('be.disabled')
-  })
-
   context('when I fill in a valid customer email', () => {
     before(() => {
       cy.get('#customer-email')
@@ -35,18 +26,14 @@ describe('[01.1] customer / customer email', () => {
         .blur()
     })
 
-    it('updates the order customer email on blur', () => {
-      cy.get_order({
-        order_id: orderId
-      }).then(order => {
-        expect(order.data.attributes.customer_email).to.equal(
-          'filippo@example.com'
-        )
+    context('when I check the customer subsciption checkbox', () => {
+      before(() => {
+        cy.get('#customer-subscription-checkbox').click({ force: true })
       })
-    })
 
-    it('keeps the submit button as disabled', () => {
-      cy.get('#customer-step-submit').should('be.disabled')
+      it('creates a customer subscription', () => {
+        // to make a real test here we need to record and reuse the API responses
+      })
     })
   })
 })
