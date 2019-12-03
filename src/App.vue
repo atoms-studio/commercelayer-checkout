@@ -6,6 +6,27 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  mounted () {
+    window.addEventListener('CookiebotOnAccept', () => {
+      if (window.Cookiebot.consent.preferences) {
+        this.$gtm.pushEvent({
+          event: 'cookieconsent_preferences'
+        })
+      }
+
+      if (window.Cookiebot.consent.statistics) {
+        this.$gtm.pushEvent({
+          event: 'cookieconsent_statistics'
+        })
+      }
+
+      if (window.Cookiebot.consent.marketing) {
+        this.$gtm.pushEvent({
+          event: 'cookieconsent_marketing'
+        })
+      }
+    })
+  }
 }
 </script>
