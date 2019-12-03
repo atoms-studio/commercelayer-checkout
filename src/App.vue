@@ -10,19 +10,19 @@ export default {
   mounted () {
     window.addEventListener('CookiebotOnAccept', () => {
       if (window.Cookiebot.consent.preferences) {
-        this.$gtm.pushEvent({
+        this.$gtm.trackEvent({
           event: 'cookieconsent_preferences'
         })
       }
 
       if (window.Cookiebot.consent.statistics) {
-        this.$gtm.pushEvent({
+        this.$gtm.trackEvent({
           event: 'cookieconsent_statistics'
         })
       }
 
       if (window.Cookiebot.consent.marketing) {
-        this.$gtm.pushEvent({
+        this.$gtm.trackEvent({
           event: 'cookieconsent_marketing'
         })
       }
