@@ -16,7 +16,7 @@ export const addressMixin = {
   },
   computed: {
     countries () {
-      return countries.filter(country => /AT|BE|CH|CY|CZ|DE|EE|ES|FI|FR|GR|HU|IE|IT|LV|LT|LU|MT|NL|PL|PT|SK|SI|GB/.test(country.code))
+      return countries
     },
     requiresBillingInfo () {
       return this.billing && this.order.requires_billing_info
