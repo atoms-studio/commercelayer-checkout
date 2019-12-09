@@ -47,7 +47,7 @@ export default {
     overflow: hidden;
     padding-left: 30px;
 
-    @screen lg {
+    @media (min-width: 1024px) {
       max-width: 66.66667%;
       padding-left: 0;
       padding-right: 0;
@@ -57,7 +57,10 @@ export default {
       padding: 0 !important;
 
       #CybotCookiebotDialogBodyContentTitle {
-        @apply font-first mt-3 mb-0 mx-0;
+        margin-top: 15px;
+        margin-bottom: 0;
+        margin-left: 0;
+        margin-right: 0;
         font-size: 14px;
         letter-spacing: 0.6px;
         line-height: 30px;
@@ -65,7 +68,8 @@ export default {
       }
 
       #CybotCookiebotDialogBodyContentText {
-        @apply font-first mt-3 mb-3;
+        margin-top: 15px;
+        margin-bottom: 15px;
         font-size: 11px;
         letter-spacing: 0.8px;
         line-height: 16px;
@@ -80,7 +84,7 @@ export default {
       display: block !important;
       margin-bottom: 20px;
 
-      @screen lg {
+      @media (min-width: 1024px) {
         display: flex !important;
         margin-bottom: 30px !important;
       }
@@ -90,7 +94,7 @@ export default {
         float: none;
         margin-bottom: 15px;
 
-        @screen lg {
+        @media (min-width: 1024px) {
           display: flex;
           order: 2;
           flex: 0 0 auto;
@@ -100,7 +104,10 @@ export default {
         }
 
         #CybotCookiebotDialogBodyLevelButtonAccept {
-          @apply font-second inline-block p-2 text-center mt-0;
+          display: inline-block;
+          padding: 10px;
+          text-align: center;
+          margin-top: 0;
           text-transform: capitalize;
           font-size: 0.938rem;
           line-height: 1.188;
@@ -135,7 +142,7 @@ export default {
         margin-bottom: 30px;
         width: 100%;
 
-        @screen lg {
+        @media (min-width: 1024px) {
           display: flex;
           margin-right: 30px !important;
           line-height: 1.188;
@@ -155,7 +162,6 @@ export default {
             line-height: 39px;
 
             #CybotCookiebotDialogBodyLevelButtonsSelectPane {
-              @apply font-first;
               font-size: 11px;
               letter-spacing: 0.8px;
               line-height: 16px;
@@ -175,7 +181,11 @@ export default {
                   width: 8px;
                   height: 8px;
                   flex: 0 0 8px;
-                  @apply block overflow-hidden border border-solid border-black cursor-pointer z-10;
+                  display: block;
+                  overflow: hidden;
+                  border: 1px solid #000;
+                  cursor: pointer;
+                  z-index: 10;
                   border-radius: 50%;
                   position: absolute;
                   top: 5px !important;
@@ -187,7 +197,12 @@ export default {
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
-                    @apply block z-0 w-0 h-0 bg-black opacity-0;
+                    display: block;
+                    z-index: 0;
+                    width: 0;
+                    height: 0;
+                    background-color: #000;
+                    opacity: 0;
                     border-radius: 50%;
                     transition: all 400ms;
                   }
@@ -200,13 +215,12 @@ export default {
                 }
                 label {
                   background-image: none !important;
-                  @apply font-first;
                   font-size: 11px;
                   letter-spacing: 0.8px;
                   line-height: 16px;
                   width: 60px;
 
-                  @screen lg {
+                  @media (min-width: 1024px) {
                     width: auto;
                   }
                 }
@@ -219,12 +233,11 @@ export default {
               position: relative;
               width: 100px;
 
-              @screen lg {
+              @media (min-width: 1024px) {
                 width: auto;
               }
 
               #CybotCookiebotDialogBodyLevelDetailsButton {
-                @apply font-first;
                 font-size: 11px;
                 letter-spacing: 0.8px;
                 line-height: 16px;
@@ -234,7 +247,7 @@ export default {
                 bottom: 0;
                 left: 0;
 
-                @screen lg {
+                @media (min-width: 1024px) {
                   position: relative !important;
                   bottom: unset !important;
                   left: unset !important;
@@ -264,7 +277,7 @@ export default {
       padding-left: 30px;
       padding-right: 30px;
 
-      @screen lg {
+      @media (min-width: 1024px) {
         max-width: 66.66667%;
         padding-right: 0;
         padding-left: 0;
@@ -275,7 +288,6 @@ export default {
         border-top: 0.5px solid #0000004d;
 
         a {
-          @apply font-first;
           font-size: 11px;
           font-weight: bold;
           letter-spacing: 0.8px;
@@ -299,7 +311,7 @@ export default {
             width: 50%;
             padding-right: 0;
 
-            @screen lg {
+            @media (min-width: 1024px) {
               width: 16.66667%;
             }
           }
@@ -317,12 +329,11 @@ export default {
             #CybotCookiebotDialogDetailBodyContentCookieContainerTypes {
               width: 50%;
 
-              @screen lg {
+              @media (min-width: 1024px) {
                 width: 16.66667%;
               }
 
               a {
-                @apply font-first;
                 font-size: 11px;
                 letter-spacing: 0.8px;
                 line-height: 16px;
@@ -354,7 +365,7 @@ export default {
 
               div {
                 .CybotCookiebotDialogDetailBodyContentCookieTypeIntro {
-                  @apply font-first mb-6;
+                  margin-bottom: 30px;
                   font-size: 11px;
                   letter-spacing: 0.8px;
                   line-height: 16px;
@@ -364,13 +375,12 @@ export default {
                   border: none;
 
                   .CybotCookiebotDialogDetailBodyContentCookieTypeTable {
-                    @apply m-0;
+                    margin: 0;
 
                     thead {
                       td,
                       th {
                         background: #ffffff !important;
-                        @apply font-first;
                         font-size: 11px;
                         letter-spacing: 0.8px;
                         line-height: 16px;
@@ -384,7 +394,7 @@ export default {
                       th {
                         padding: 0 100px 10px 0;
 
-                        @screen lg {
+                        @media (min-width: 1024px) {
                           padding: 0 0 10px 0;
                         }
                       }
@@ -392,7 +402,6 @@ export default {
 
                     tbody {
                       td {
-                        @apply font-first;
                         font-size: 11px;
                         letter-spacing: 0.8px;
                         line-height: 16px;
@@ -404,7 +413,6 @@ export default {
                         word-break: break-word;
 
                         a {
-                          @apply font-first;
                           font-size: 11px;
                           letter-spacing: 0.8px;
                           line-height: 16px;
@@ -425,7 +433,6 @@ export default {
       }
 
       #CybotCookiebotDialogDetailFooter {
-        @apply font-first;
         font-size: 11px;
         letter-spacing: 0.8px;
         line-height: 16px;
@@ -444,14 +451,13 @@ export default {
     }
 
     #CybotCookiebotDialogDetailBodyContentTextAbout {
-      @apply font-first;
       font-size: 11px;
       letter-spacing: 0.8px;
       line-height: 16px;
       padding: 0;
       height: auto;
 
-      @screen lg {
+      @media (min-width: 1024px) {
         height: 140px;
       }
     }
