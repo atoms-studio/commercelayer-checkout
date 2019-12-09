@@ -190,6 +190,7 @@ export default {
                   position: absolute;
                   top: 5px !important;
                   opacity: 1;
+                  appearance: none !important;
 
                   &:after {
                     content: '';
@@ -208,8 +209,8 @@ export default {
                   }
 
                   &:checked:after {
-                    width: 7px;
-                    height: 7px;
+                    width: 8px;
+                    height: 8px;
                     opacity: 1;
                   }
                 }
