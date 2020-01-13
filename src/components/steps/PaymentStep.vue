@@ -54,10 +54,10 @@ export default {
   },
   mixins: [stepMixin],
   computed: {
-    disabled() {
+    disabled () {
       return this.invalid_payment_method
     },
-    availablePaymentOptions() {
+    availablePaymentOptions () {
       let paymentOptions = []
       _.each(this.order.available_payment_methods, paymentMethod => {
         switch (paymentMethod.payment_source_type) {
