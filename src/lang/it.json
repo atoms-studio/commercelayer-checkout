@@ -11,7 +11,7 @@
     "zip_code": "cap"
   },
   "errors": {
-    "invalid_coupon": "Questo codice coupon non è valido",
+    "invalid_gift_card_or_coupon": "Questo codice non è valido",
     "not_authorized": "La tua carta non è stata autorizzata",
     "out_of_stock": "Alcuni articoli non sono più disponibili",
     "too_short": "Questo codice coupon è troppo corto"
@@ -39,10 +39,10 @@
     "ship_to": "Spedisci a",
     "terms_of_service": "condizioni di vendita",
     "thankyou": "Grazie",
-    "thankyou_message": "Il tuo ordine è confermato e verrà preparato per la spedizione"
+    "thankyou_message": "Il tuo ordine è confermato"
   },
   "order_summary": {
-    "coupon_code": "Hai un codice coupon?",
+    "gift_card_or_coupon_code": "Hai una gift card o un coupon?",
     "discount": "sconto",
     "hide": "nascondi riepilogo ordine",
     "number": "numero ordine",
@@ -51,6 +51,7 @@
     "show": "mostra riepilogo ordine",
     "subtotal": "subtotale",
     "taxes": "tasse",
+    "gift_card": "gift card",
     "title": "riepilogo ordine",
     "total": "totale ordine"
   },
@@ -76,18 +77,20 @@
   "steps": {
     "customer": {
       "title": "cliente",
-      "hint": "informazioni personali e indirizzo di spedizione",
-      "button": "vai alla consegna"
+      "hint": "informazioni personali e indirizzo di spedizione"
     },
     "delivery": {
       "title": "consegna",
-      "hint": "riepilogo spedizioni e metodi di consegna",
-      "button": "vai al pagamento"
+      "hint": "riepilogo spedizioni e metodi di consegna"
     },
     "payment": {
       "title": "pagamento",
-      "hint": "metodo di pagamento e conferma ordine",
-      "button": "conferma ordine"
+      "hint": "metodo di pagamento e conferma ordine"
     }
+  },
+  "buttons": {
+    "continue_to_delivery": "vai alla consegna",
+    "continue_to_payment": "vai al pagamento",
+    "place_order": "conferma ordine"
   }
 }

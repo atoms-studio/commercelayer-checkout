@@ -32,7 +32,7 @@ export const collectBrowserInfo = () => {
 }
 
 export const getCurrentStep = order => {
-  let step = 3
+  let step = getRequiresPayment(order) ? 3 : 2
 
   if (
     _.isEmpty(order.customer_email) ||
@@ -49,8 +49,16 @@ export const getCurrentStep = order => {
   return step
 }
 
-export const getCouponApplied = order => {
-  return !_.isEmpty(order.coupon_code)
+export const getRequiresDelivery = order => {
+  return !_.isEmpty(skuLineItems(order))
+}
+
+export const getRequiresPayment = order => {
+  return order.total_amount_with_taxes_float > 0
+}
+
+export const getGiftCardOrCouponApplied = order => {
+  return !_.isEmpty(order.gift_card_or_coupon_code)
 }
 
 export const skuLineItems = order => {

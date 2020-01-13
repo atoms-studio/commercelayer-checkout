@@ -5,7 +5,12 @@ import APIService from '@/services/APIService'
 import NProgress from 'nprogress'
 import router from '@/router'
 import i18n from '@/plugins/i18n'
-import { getCurrentStep, getCouponApplied } from '@/utils/functions'
+import {
+  getCurrentStep,
+  getGiftCardOrCouponApplied,
+  getRequiresDelivery,
+  getRequiresPayment
+} from '@/utils/functions'
 import { trackPurchase } from '@/utils/gtm'
 
 Vue.use(Vuex)
@@ -18,8 +23,10 @@ export default new Vuex.Store({
       refresh_token: null
     },
     current_step: 1,
+    requires_delivery: true,
+    requires_payment: true,
     notifications: {
-      coupon_applied: false
+      gift_card_or_coupon_applied: false
     },
     buttons: {
       loading_customer: false,
@@ -34,7 +41,8 @@ export default new Vuex.Store({
       invalid_payment_method: false
     },
     errors: {
-      apply_coupon: null,
+      apply_gift_card_or_coupon: null,
+      set_addresses: null,
       place_order: null
     },
     selected_payment_option_component: null,
@@ -58,8 +66,17 @@ export default new Vuex.Store({
     updateCurrentStep (state, value) {
       state.current_step = value
     },
+    updateRequiresDelivery (state, value) {
+      state.requires_delivery = value
+    },
+    updateRequiresPayment (state, value) {
+      state.requires_payment = value
+    },
     updateOrderPaymentSource (state, paymentSource) {
       state.order.payment_source = paymentSource
+    },
+    updateButtonLoadingCustomer (state, value) {
+      state.buttons.loading_customer = value
     },
     updateButtonLoadingDelivery (state, value) {
       state.buttons.loading_delivery = value
@@ -68,10 +85,13 @@ export default new Vuex.Store({
       state.buttons.loading_payment = value
     },
     updateApplyCouponError (state, value) {
-      state.errors.apply_coupon = value
+      state.errors.apply_gift_card_or_coupon = value
     },
-    updateCouponAppliedNotification (state, value) {
-      state.notifications.coupon_applied = value
+    updateGiftCardOrCouponApplied (state, value) {
+      state.notifications.gift_card_or_coupon_applied = value
+    },
+    updateSetAddressesError (state, value) {
+      state.errors.set_addresses = value
     },
     updatePlaceOrderError (state, value) {
       state.errors.place_order = value
@@ -104,7 +124,12 @@ export default new Vuex.Store({
       return APIService.getOrder(orderId).then(order => {
         commit('updateOrder', order)
         commit('updateCurrentStep', getCurrentStep(order))
-        commit('updateCouponAppliedNotification', getCouponApplied(order))
+        commit('updateRequiresDelivery', getRequiresDelivery(order))
+        commit('updateRequiresPayment', getRequiresPayment(order))
+        commit(
+          'updateGiftCardOrCouponApplied',
+          getGiftCardOrCouponApplied(order)
+        )
         return order
       })
     },
@@ -150,15 +175,16 @@ export default new Vuex.Store({
           NProgress.done()
         })
     },
-    setOrderCouponCode ({ commit, state }) {
+    setOrderGiftCardOrCouponCode ({ commit, state }) {
       NProgress.start()
       return APIService.updateOrder(state.order, {
-        coupon_code: state.order.coupon_code
+        gift_card_or_coupon_code: state.order.gift_card_or_coupon_code
       })
         .then(order => {
           commit('updateOrder', order)
+          commit('updateRequiresPayment', getRequiresPayment(order))
           commit('updateApplyCouponError', null)
-          commit('updateCouponAppliedNotification', true)
+          commit('updateGiftCardOrCouponApplied', true)
           return order
         })
         .catch(response => {
@@ -172,10 +198,17 @@ export default new Vuex.Store({
         })
     },
     setOrderAddresses ({ commit, state }) {
-      return APIService.updateOrderAddresses(state.order).then(order => {
-        commit('updateOrder', order)
-        return order
-      })
+      return APIService.updateOrderAddresses(state.order)
+        .then(order => {
+          commit('updateOrder', order)
+          return order
+        })
+        .catch(response => {
+          commit('updateSetAddressesError', response.data.errors[0].meta.error)
+        })
+        .finally(() => {
+          commit('updateButtonLoadingCustomer', false)
+        })
     },
     setShipmentShippingMethod ({ commit, dispatch }, payload) {
       commit('updateButtonLoadingDelivery', true)
@@ -219,7 +252,7 @@ export default new Vuex.Store({
     },
     placeOrder ({ commit, state }) {
       commit('updatePlaceOrderError', null)
-      commit('updateButtonLoadingDelivery', true)
+      commit('updateButtonLoadingPayment', true)
 
       return APIService.placeOrder(state.order)
         .then(order => {
@@ -234,14 +267,13 @@ export default new Vuex.Store({
           })
         })
         .catch(response => {
-          console.log(response)
           commit(
             'updatePlaceOrderError',
             i18n.t('errors.' + response.data.errors[0].meta.error)
           )
         })
         .finally(() => {
-          commit('updateButtonLoadingDelivery', false)
+          commit('updateButtonLoadingPayment', false)
         })
     }
   }

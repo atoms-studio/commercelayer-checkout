@@ -3,7 +3,7 @@ import _ from 'lodash'
 
 Cypress.Commands.add('iframe', { prevSubject: 'element' }, $iframe => {
   return new Cypress.Promise(resolve => {
-    $iframe.ready(function () {
+    $iframe.ready(function() {
       resolve($iframe.contents().find('body'))
     })
   })
@@ -85,7 +85,7 @@ Cypress.Commands.add('get_order', options => {
   })
 })
 
-Cypress.Commands.add('create_line_item', options => {
+Cypress.Commands.add('create_sku_line_item', options => {
   cy.get_access_token().then(accessToken => {
     cy.request({
       url: Cypress.env('API_BASE_URL') + '/api/line_items',
@@ -102,6 +102,94 @@ Cypress.Commands.add('create_line_item', options => {
               data: {
                 type: 'orders',
                 id: options.order_id
+              }
+            }
+          }
+        }
+      },
+      headers: apiRequestHeaders(accessToken)
+    }).its('body.data')
+  })
+})
+
+Cypress.Commands.add('create_gift_card', options => {
+  cy.get_access_token().then(accessToken => {
+    cy.request({
+      url: Cypress.env('API_BASE_URL') + '/api/gift_cards',
+      method: 'POST',
+      body: {
+        data: {
+          type: 'gift_cards',
+          attributes: options.attributes
+        }
+      },
+      headers: apiRequestHeaders(accessToken)
+    }).its('body.data')
+  })
+})
+
+Cypress.Commands.add('purchase_gift_card', options => {
+  cy.get_access_token().then(accessToken => {
+    cy.request({
+      url:
+        Cypress.env('API_BASE_URL') + '/api/gift_cards/' + options.gift_card_id,
+      method: 'PATCH',
+      body: {
+        data: {
+          type: 'gift_cards',
+          id: options.gift_card_id,
+          attributes: {
+            _purchase: true
+          }
+        }
+      },
+      headers: apiRequestHeaders(accessToken)
+    }).its('body.data')
+  })
+})
+
+Cypress.Commands.add('activate_gift_card', options => {
+  cy.get_access_token().then(accessToken => {
+    cy.request({
+      url:
+        Cypress.env('API_BASE_URL') + '/api/gift_cards/' + options.gift_card_id,
+      method: 'PATCH',
+      body: {
+        data: {
+          type: 'gift_cards',
+          id: options.gift_card_id,
+          attributes: {
+            _activate: true
+          }
+        }
+      },
+      headers: apiRequestHeaders(accessToken)
+    }).its('body.data')
+  })
+})
+
+Cypress.Commands.add('create_line_item', options => {
+  cy.get_access_token().then(accessToken => {
+    cy.request({
+      url: Cypress.env('API_BASE_URL') + '/api/line_items',
+      method: 'POST',
+      body: {
+        data: {
+          type: 'line_items',
+          attributes: {
+            quantity: options.quantity
+          },
+          relationships: {
+            order: {
+              data: {
+                type: 'orders',
+                id: options.order_id
+              }
+            },
+            item: {
+              data: {
+                type: options.item_type,
+                id: options.item_id
               }
             }
           }
@@ -335,7 +423,7 @@ Cypress.Commands.add('setup_payment_step', () => {
       quantity: 10
     })
 
-    cy.create_line_item({
+    cy.create_sku_line_item({
       order_id: order.id,
       sku_code: Cypress.env('SKU_CODE'),
       quantity: 1
@@ -380,6 +468,16 @@ Cypress.Commands.add('setup_payment_step', () => {
       return order
     })
   })
+})
+
+Cypress.Commands.add('apply_gift_card_or_coupon_code', options => {
+  cy.get('#gift-card-or-coupon-code')
+    .clear()
+    .type(options.code)
+
+  cy.wrap('.coupon')
+    .get('i[role=button]')
+    .click()
 })
 
 Cypress.Commands.add('check_payment_method', options => {
