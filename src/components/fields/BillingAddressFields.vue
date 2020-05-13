@@ -68,6 +68,16 @@
         ></v-autocomplete>
       </v-flex>
       <v-flex xs6 px-2>
+        <v-autocomplete
+          id="billing-address-state-code"
+          :label="inputLabel('state_code')"
+          :items="states"
+          v-model="state_code"
+          :error-messages="errorMessages('state_code')"
+          @input="handleInput()"
+          @blur="handleBlur('state_code')"
+          v-if="hasStates"
+        ></v-autocomplete>
         <v-text-field
           id="billing-address-state-code"
           :label="inputLabel('state_code')"
@@ -75,6 +85,7 @@
           :error-messages="errorMessages('state_code')"
           @input="handleInput()"
           @blur="handleBlur('state_code')"
+          v-if="!hasStates"
         ></v-text-field>
       </v-flex>
       <v-flex xs6 px-2>
@@ -155,6 +166,9 @@ export default {
         this.ship_to_different_address = isRequired
       }
     }
+  },
+  mounted () {
+    this.updateShipToDifferentAddressRequired()
   }
 }
 </script>
