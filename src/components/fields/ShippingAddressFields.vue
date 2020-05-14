@@ -44,26 +44,6 @@
             @blur="handleBlur('last_name')"
           ></v-text-field>
         </v-flex>
-        <v-flex xs12 sm6 px-2>
-          <v-text-field
-            id="shipping-address-line-1"
-            :label="inputLabel('line_1')"
-            v-model="line_1"
-            :error-messages="errorMessages('line_1')"
-            @input="handleInput()"
-            @blur="handleBlur('line_1')"
-          ></v-text-field>
-        </v-flex>
-        <v-flex xs6 px-2>
-          <v-text-field
-            id="shipping-address-city"
-            :label="inputLabel('city')"
-            v-model="city"
-            :error-messages="errorMessages('city')"
-            @input="handleInput()"
-            @blur="handleBlur('city')"
-          ></v-text-field>
-        </v-flex>
         <v-flex xs6 px-2>
           <v-autocomplete
             id="shipping-address-country-code"
@@ -78,6 +58,26 @@
             @blur="handleBlur('country_code')"
             :disabled="shippingCountryCodeLocked"
           ></v-autocomplete>
+        </v-flex>
+        <v-flex xs6 px-2>
+          <v-text-field
+            id="shipping-address-city"
+            :label="inputLabel('city')"
+            v-model="city"
+            :error-messages="errorMessages('city')"
+            @input="handleInput()"
+            @blur="handleBlur('city')"
+          ></v-text-field>
+        </v-flex>
+        <v-flex xs12 sm6 px-2>
+          <v-text-field
+            id="shipping-address-line-1"
+            :label="inputLabel('line_1')"
+            v-model="line_1"
+            :error-messages="errorMessages('line_1')"
+            @input="handleInput()"
+            @blur="handleBlur('line_1')"
+          ></v-text-field>
         </v-flex>
         <v-flex xs6 px-2>
           <v-autocomplete
