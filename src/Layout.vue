@@ -18,6 +18,7 @@
           <router-view></router-view>
         </v-flex>
         <v-flex xs12 md5 order-xs1 order-md2>
+          <LoginLink />
           <OrderSummary />
         </v-flex>
       </v-layout>
@@ -36,6 +37,7 @@
 
 <script>
 import OrderSummary from '@/components/summaries/OrderSummary.vue'
+import LoginLink from '@/components/custom/LoginLink.vue'
 import Footer from '@/components/partials/Footer.vue'
 
 export default {
@@ -48,6 +50,7 @@ export default {
   },
   components: {
     OrderSummary,
+    LoginLink,
     Footer
   },
   metaInfo: {

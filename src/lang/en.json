@@ -41,6 +41,11 @@
     "thankyou": "Thank you",
     "thankyou_message": "Your order is confirmed and we are getting it ready for shipment"
   },
+  "loginLink": {
+    "label": "Already have an account?",
+    "actionLabel": "Login",
+    "labelAfter": "now"
+  },
   "order_summary": {
     "gift_card_or_coupon_code": "Have a gift card or coupon?",
     "discount": "discount",
