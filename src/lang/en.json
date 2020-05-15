@@ -39,7 +39,8 @@
     "ship_to": "Ship to",
     "terms_of_service": "terms of service",
     "thankyou": "Thank you",
-    "thankyou_message": "Your order is confirmed and we are getting it ready for shipment"
+    "thankyou_message": "Your order is confirmed and we are getting it ready for shipment",
+    "sameAddress": "Same as Billing address"
   },
   "loginLink": {
     "label": "Already have an account?",

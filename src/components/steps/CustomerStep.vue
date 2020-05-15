@@ -61,9 +61,11 @@
             <div class="header">{{ $t('generic.ship_to') | capitalize }}:</div>
             <div class="shipping-address-summary">
               <AddressSummary
+                v-if="order.ship_to_different_address"
                 :address="order.shipping_address"
                 :billing="false"
               />
+              <div v-else class="body-2">{{ $t('generic.sameAddress') }}</div>
             </div>
           </v-flex>
         </v-layout>
