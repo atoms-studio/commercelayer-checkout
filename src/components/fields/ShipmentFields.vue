@@ -63,6 +63,11 @@ export default {
         this.trackDeliveryOption(shippingMethod.name)
         this.updateValidations()
       })
+    },
+    setDefaultShippingMethod () {
+      if (this.sortedAvailableShippingMethods.length > 0) {
+        this.handleChange(this.sortedAvailableShippingMethods[0])
+      }
     }
   },
   computed: {
@@ -80,6 +85,7 @@ export default {
     ...mapFields(['validations.invalid_shipments'])
   },
   mounted () {
+    this.setDefaultShippingMethod()
     this.updateValidations()
   }
 }
