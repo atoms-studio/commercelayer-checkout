@@ -133,6 +133,18 @@ export default new Vuex.Store({
         return order
       })
     },
+    setOrderWithoutUpdatingStep ({ commit }, orderId) {
+      return APIService.getOrder(orderId).then(order => {
+        commit('updateOrder', order)
+        commit('updateRequiresDelivery', getRequiresDelivery(order))
+        commit('updateRequiresPayment', getRequiresPayment(order))
+        commit(
+          'updateGiftCardOrCouponApplied',
+          getGiftCardOrCouponApplied(order)
+        )
+        return order
+      })
+    },
     setCustomer ({ commit }) {
       APIService.getCustomerAddresses()
         .then(customerAddresses => {
@@ -275,6 +287,18 @@ export default new Vuex.Store({
         .finally(() => {
           commit('updateButtonLoadingPayment', false)
         })
+    },
+    setDefaultShipmentShippingMethod ({ commit, dispatch }, payload) {
+      commit('updateButtonLoadingDelivery', true)
+      return APIService.updateShipmentShippingMethod(
+        payload.shipment,
+        payload.shippingMethod
+      ).then(() => {
+        return dispatch('setOrderWithoutUpdatingStep', payload.order.id).then(order => {
+          commit('updateButtonLoadingDelivery', false)
+          return order
+        })
+      })
     }
   }
 })

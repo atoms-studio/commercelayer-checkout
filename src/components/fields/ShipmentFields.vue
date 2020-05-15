@@ -66,7 +66,17 @@ export default {
     },
     setDefaultShippingMethod () {
       if (this.sortedAvailableShippingMethods.length > 0) {
-        this.handleChange(this.sortedAvailableShippingMethods[0])
+        let payload = {
+          order: this.order,
+          shipment: this.shipment,
+          shippingMethod: this.sortedAvailableShippingMethods[0]
+        }
+        this.$store.dispatch('setDefaultShipmentShippingMethod', payload).then(() => {
+          this.trackDeliveryOption(this.sortedAvailableShippingMethods[0].name)
+          this.updateValidations()
+        })
+      } else {
+        this.updateValidations()
       }
     }
   },
@@ -86,7 +96,6 @@ export default {
   },
   mounted () {
     this.setDefaultShippingMethod()
-    this.updateValidations()
   }
 }
 </script>
