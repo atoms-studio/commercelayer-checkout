@@ -21,7 +21,7 @@ export default {
   padding: 0 0.5rem;
 }
 
-.link:hover {
+.link {
   text-decoration: underline;
 }
 

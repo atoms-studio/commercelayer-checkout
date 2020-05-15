@@ -8,8 +8,7 @@
     >
       <div>
         {{ $t('steps.customer.title') | capitalize }}
-        <span v-if="complete">
-          &mdash;
+        <span class="edit" v-if="complete">
           <a>{{ $t('generic.edit') }}</a>
         </span>
       </div>
@@ -20,7 +19,7 @@
       <v-container>
         <v-layout row>
           <v-flex xs12 px-2>
-            <small><bold>{{ $t('mandatory') }} *</bold></small>
+            <small class="bold">{{ $t('mandatory') }} *</small>
           </v-flex>
         </v-layout>
       </v-container>
@@ -72,6 +71,18 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+.step-wrapper {
+  position: relative;
+}
+.edit {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  text-decoration: underline;
+}
+</style>
 
 <script>
 import { stepMixin } from '@/mixins/stepMixin'
@@ -140,5 +151,9 @@ export default {
 .order-error {
   color: $ERROR_COLOR;
   margin-top: 1rem;
+}
+
+.bold {
+  font-weight: bold;
 }
 </style>

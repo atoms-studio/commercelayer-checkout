@@ -3,8 +3,7 @@
     <v-stepper-step :step="step" :complete="complete" :editable="complete" edit-icon="done">
       <div>
         {{ $t('steps.delivery.title') | capitalize }}
-        <span v-if="complete">
-          &mdash;
+        <span class="edit" v-if="complete">
           <a>{{ $t('generic.edit') }}</a>
         </span>
       </div>
@@ -91,5 +90,14 @@ export default {
   &:last-child {
     margin-bottom: 1.5rem;
   }
+}
+.step-wrapper {
+  position: relative;
+}
+.edit {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  text-decoration: underline;
 }
 </style>

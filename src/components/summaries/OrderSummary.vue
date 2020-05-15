@@ -17,7 +17,6 @@
           v-if="editCartLink"
           class="edit-cart"
         >
-          &mdash;
           <a :href="order.cart_url">{{ $t('generic.edit') }}</a>
         </span>
       </div>
@@ -170,7 +169,15 @@ export default {
   border-top: 1px solid $v-border;
 
   .order-summary-header {
+    position: relative;
     margin: 1rem 0 2rem;
+
+    .edit-cart {
+      position: absolute;
+      top: 0;
+      right: 0;
+      text-decoration: underline;
+    }
   }
 }
 .md-and-up {
