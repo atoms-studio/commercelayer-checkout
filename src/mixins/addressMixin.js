@@ -73,7 +73,7 @@ export const addressMixin = {
       }
     },
     inputLabel (fieldName) {
-      return _.capitalize(this.$t(`addresses.${fieldName}`))
+      return _.capitalize(this.$t(`addresses.${fieldName}`)) + ' *'
     },
     errorMessages (fieldName) {
       const errors = []

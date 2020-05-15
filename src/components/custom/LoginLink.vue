@@ -18,10 +18,16 @@ export default {
 
 <style scoped>
 .link-container {
-  padding: 0 2rem;
+  padding: 0 0.5rem;
 }
 
 .link:hover {
   text-decoration: underline;
+}
+
+@media (min-width: 1024px) {
+  .link-container {
+    padding: 0 2rem;
+  }
 }
 </style>

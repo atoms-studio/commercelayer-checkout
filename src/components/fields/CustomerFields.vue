@@ -3,7 +3,7 @@
     <v-flex xs12 px-2>
       <v-text-field
         id="customer-email"
-        label="Email"
+        label="Email *"
         v-model="customer_email"
         :autofocus="autofocusEmail"
         :error-messages="errorMessages"

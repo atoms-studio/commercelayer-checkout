@@ -97,5 +97,6 @@
     "continue_to_delivery": "continue to delivery",
     "continue_to_payment": "continue to payment",
     "place_order": "place order"
-  }
+  },
+  "mandatory": "Mandatory"
 }

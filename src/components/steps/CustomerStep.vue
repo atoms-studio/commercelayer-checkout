@@ -18,6 +18,14 @@
 
     <v-stepper-content :step="step">
       <v-container>
+        <v-layout row>
+          <v-flex xs12 px-2>
+            <small><bold>{{ $t('mandatory') }} *</bold></small>
+          </v-flex>
+        </v-layout>
+      </v-container>
+
+      <v-container>
         <CustomerFields />
         <BillingAddressFields />
         <ShippingAddressFields v-if="requires_delivery" />
