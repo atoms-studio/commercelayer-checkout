@@ -18,7 +18,7 @@
           <router-view></router-view>
         </v-flex>
         <v-flex xs12 md5 order-xs1 order-md2>
-          <LoginLink />
+          <LoginLink v-if="!isLoggedIn"/>
           <OrderSummary />
         </v-flex>
       </v-layout>
@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import store from '@/store'
+
 import OrderSummary from '@/components/summaries/OrderSummary.vue'
 import LoginLink from '@/components/custom/LoginLink.vue'
 import Footer from '@/components/partials/Footer.vue'
@@ -56,6 +58,11 @@ export default {
   metaInfo: {
     titleTemplate: `%s | ${process.env.VUE_APP_BRAND_NAME}`,
     link: [{ rel: 'icon', href: process.env.VUE_APP_FAVICON_URL, once: true }]
+  },
+  computed: {
+    isLoggedIn () {
+      return store.state.auth.has_customer
+    }
   }
 }
 </script>
