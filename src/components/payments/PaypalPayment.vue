@@ -21,7 +21,7 @@ export default {
   methods: {
     paymentSourceAttributes () {
       return {
-        return_url: window.location.href + '/paypal',
+        return_url: `${(window.location.href).slice(0, (window.location.href).indexOf('?'))}paypal${(window.location.href).slice((window.location.href).indexOf('?'))}`,
         cancel_url: window.location.href
       }
     },
