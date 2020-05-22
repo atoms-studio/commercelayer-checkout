@@ -85,7 +85,11 @@ export default {
   .step-wrapper {
     .v-stepper__content {
       margin: 0px -36px -16px 36px;
-      padding: 16px 60px 16px 23px;
+      padding: 16px 60px 0 23px;
+
+      .v-stepper__wrapper {
+        padding-left: 16px;
+      }
     }
     &:not(:last-child) > .v-stepper__content {
       border-left: 1px solid $v-border;
