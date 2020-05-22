@@ -10,7 +10,7 @@
 export default {
   computed: {
     loginLink () {
-      return `https://${this.$route.query.market}.audepart.com/${this.$route.query.locale}/login-create/?select=FormLogin%2F`
+      return `https://${this.$route.query.market}.audepart.com/${this.$route.query.locale}/login-create/?select=FormLogin%2F&returnTo=checkout`
     }
   }
 }
