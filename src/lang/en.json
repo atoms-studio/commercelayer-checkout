@@ -7,7 +7,7 @@
     "last_name": "last name",
     "line_1": "address",
     "phone": "phone",
-    "state_code": "state code",
+    "state_code": "state",
     "zip_code": "zip code"
   },
   "errors": {
