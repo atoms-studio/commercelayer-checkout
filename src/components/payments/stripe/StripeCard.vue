@@ -1,5 +1,16 @@
 <template>
   <div class="payment-method">
+    <div class="payment-method-logos">
+      <div class="logo-wrapper visa">
+        <img class="logo" src="/paymentsMethods/Visa.svg" alt="Visa">
+      </div>
+      <div class="logo-wrapper mastercard">
+        <img class="logo" src="/paymentsMethods/MasterCard.svg" alt="MasterCard">
+      </div>
+      <div class="logo-wrapper american-express">
+        <img class="logo" src="/paymentsMethods/AmericanExpress.svg" alt="AmericanExpress">
+      </div>
+    </div>
     <v-radio
       :label="inputLabel('stripe')"
       :value="payment_option.component"
@@ -89,6 +100,33 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.payment-method {
+  position: relative;
+
+  .payment-method-logos {
+    position: absolute;
+    right: 0;
+    top: 12px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+
+    .logo-wrapper {
+      padding-left: 10px;
+      height: 1rem;
+
+      &.mastercard,
+      &.american-express {
+        height: 2.2rem;
+      }
+
+      .logo {
+        height: 100%;
+      }
+    }
+  }
+}
+
 .StripeElement {
   @include hosted-field;
 }

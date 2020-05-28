@@ -1,5 +1,10 @@
 <template>
   <div class="payment-method">
+    <div class="payment-method-logos">
+      <div class="logo-wrapper visa">
+        <img class="logo" src="/paymentsMethods/PayPal.svg" alt="PayPal">
+      </div>
+    </div>
     <v-radio
       :label="inputLabel('paypal')"
       :value="payment_option.component"
@@ -44,5 +49,26 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+.payment-method {
+  position: relative;
+
+  .payment-method-logos {
+    position: absolute;
+    right: 0;
+    top: 12px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+
+    .logo-wrapper {
+      padding-left: 10px;
+      height: 1.2rem;
+
+      .logo {
+        height: 100%;
+      }
+    }
+  }
+}
 </style>
