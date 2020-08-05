@@ -22,6 +22,7 @@ export const trackPurchase = order => {
         actionField: {
           id: order.number,
           revenue: order.total_amount_with_taxes_float,
+          revenue_fb: parseFloat(order.total_amount_with_taxes_float).toFixed(2),
           shipping: order.shipping_amount_float,
           tax: order.total_tax_amount_float,
           coupon: order.gift_card_or_coupon_code
