@@ -3,7 +3,7 @@
     <v-container>
       <v-layout row>
         <v-flex shrink px-2 py-1>
-          <v-img :src="shipment_line_item.line_item.image_url" aspect-ratio="1" width="50" />
+          <v-img :src="shipment_line_item.line_item.image_url" :aspect-ratio="2/3" width="50" />
         </v-flex>
         <v-flex grow px-2 py-1>
           <div class="name">{{ shipment_line_item.line_item.name }}</div>
