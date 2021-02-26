@@ -2,21 +2,20 @@
   <div class="order-summary">
     <h2 class="order-summary-title" v-if="!viewCartLink">
       {{ $t('order_summary.title') | capitalize }}
-      <span
-        class="order-summary-title-total"
-      >{{ order.formatted_total_amount_with_taxes }}</span>
+      <span class="order-summary-title-total">{{
+        order.formatted_total_amount_with_taxes
+      }}</span>
     </h2>
     <div class="order-summary-toggle" v-if="viewCartLink">
       <a @click="toggleCart()">{{ viewCartLabel | capitalize }}</a>
-      <span class="order-summary-title-total">{{ order.formatted_total_amount_with_taxes }}</span>
+      <span class="order-summary-title-total">{{
+        order.formatted_total_amount_with_taxes
+      }}</span>
     </div>
     <div class="order-summary-content" v-show="viewCart">
       <div class="order-summary-header">
         {{ $t('order_summary.number') | capitalize }}: #{{ order.number }}
-        <span
-          v-if="editCartLink"
-          class="edit-cart"
-        >
+        <span v-if="editCartLink" class="edit-cart">
           <a :href="order.cart_url">{{ $t('generic.edit') }}</a>
         </span>
       </div>
@@ -96,57 +95,54 @@ export default {
     editable: {
       type: Boolean,
       required: false,
-      default: true
-    }
+      default: true,
+    },
   },
-  data () {
+  data() {
     return {
-      viewCart: false
+      viewCart: true,
     }
   },
   components: {
     OrderSummaryLineItem,
     OrderSummaryGiftCardOrCoupon,
-    OrderSummarySubtotal
+    OrderSummarySubtotal,
   },
   computed: {
-    viewCartLink () {
+    viewCartLink() {
       return this.$vuetify.breakpoint.smAndDown
     },
-    editCartLink () {
+    editCartLink() {
       return !_.isEmpty(this.order.cart_url) && this.order.editable
     },
-    viewCartLabel () {
+    viewCartLabel() {
       return this.viewCart
         ? this.$t('order_summary.hide')
         : this.$t('order_summary.show')
     },
-    showGiftCardOrCoupon () {
+    showGiftCardOrCoupon() {
       return (
         this.order.editable &&
         process.env.VUE_APP_HIDE_GIFT_CARD_OR_COUPON !== 'TRUE'
       )
     },
-    skuLineItems () {
+    skuLineItems() {
       return _.filter(this.order.line_items, { item_type: 'skus' })
     },
-    giftCardLineItems () {
-      return _.filter(this.order.line_items, lineItem => {
+    giftCardLineItems() {
+      return _.filter(this.order.line_items, (lineItem) => {
         return (
           lineItem.item_type === 'gift_cards' && lineItem.total_amount_float > 0
         )
       })
     },
-    ...mapState(['order', 'notifications'])
+    ...mapState(['order', 'notifications']),
   },
   methods: {
-    toggleCart () {
+    toggleCart() {
       this.viewCart = !this.viewCart
-    }
+    },
   },
-  mounted () {
-    this.viewCart = this.$vuetify.breakpoint.mdAndUp
-  }
 }
 </script>
 
