@@ -9,6 +9,9 @@
           <div class="name">{{ line_item.name }}</div>
           <div class="sku-code">{{ line_item.sku_code }}</div>
           <div class="quanity">{{ $t('generic.quantity') | capitalize }}: {{ line_item.quantity }}</div>
+          <div v-if="line_item.metadata.size" class="size">
+            {{ $t('generic.size') | capitalize }}: {{ line_item.metadata.size }}
+          </div>
         </v-flex>
         <v-flex xs3>
           <div class="amount">{{ line_item.formatted_total_amount }}</div>
