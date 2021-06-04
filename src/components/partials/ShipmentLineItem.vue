@@ -11,6 +11,9 @@
           <div
             class="quantity"
           >{{ $t('generic.quantity') | capitalize }}: {{ shipment_line_item.quantity }}</div>
+          <div v-if="shipment_line_item.line_item.metadata.size" class="size">
+            {{ $t('generic.size') | capitalize }}: {{ shipment_line_item.line_item.metadata.size }}
+          </div>
         </v-flex>
       </v-layout>
     </v-container>
